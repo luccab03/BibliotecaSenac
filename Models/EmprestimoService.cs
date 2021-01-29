@@ -38,6 +38,21 @@ namespace Biblioteca.Models
             }
         }
 
+        public ICollection<Livro> LivrosDisponivel(){
+            using (BibliotecaContext bc = new BibliotecaContext()){
+                ICollection<Livro> lista = bc.Livros.ToList();;
+                ICollection<Emprestimo> emprestimos = bc.Emprestimos.ToList();
+                foreach(Emprestimo e in emprestimos){
+                    if (!e.Devolvido) {
+                        lista.Remove(e.Livro);
+                    } else if (e.Devolvido) {
+                        lista.Add(e.Livro);
+                    }
+                }
+                return lista;
+            }
+        }
+
         public Emprestimo ObterPorId(int id)
         {
             using(BibliotecaContext bc = new BibliotecaContext())
