@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Biblioteca.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,7 +41,12 @@ namespace Biblioteca.Controllers
                 objFiltro.TipoFiltro = tipoFiltro;
             }
             LivroService livroService = new LivroService();
-            return View(livroService.ListarTodos(objFiltro));
+            List<Livro> lista = livroService.ListarTodos(objFiltro).ToList();
+            if(lista.Count > 0) {
+                return View(lista);
+            } else {
+                return View();
+            }
         }
 
         public IActionResult Edicao(int id)
