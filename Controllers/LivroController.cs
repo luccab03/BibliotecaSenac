@@ -42,11 +42,8 @@ namespace Biblioteca.Controllers
             }
             LivroService livroService = new LivroService();
             List<Livro> lista = livroService.ListarTodos(objFiltro).ToList();
-            if(lista.Count > 0) {
-                return View(lista);
-            } else {
-                return View();
-            }
+            if(lista.Count > 0) return View(lista);
+            else return View();
         }
 
         public IActionResult Edicao(int id)

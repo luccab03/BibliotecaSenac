@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca.Models
 {
-    public class EmprestimoService 
+    public class EmprestimoService
     {
         public void Inserir(Emprestimo e)
         {
-            using(BibliotecaContext bc = new BibliotecaContext())
+            using (BibliotecaContext bc = new BibliotecaContext())
             {
                 bc.Emprestimos.Add(e);
                 bc.SaveChanges();
@@ -17,7 +17,7 @@ namespace Biblioteca.Models
 
         public void Atualizar(Emprestimo e)
         {
-            using(BibliotecaContext bc = new BibliotecaContext())
+            using (BibliotecaContext bc = new BibliotecaContext())
             {
                 Emprestimo emprestimo = bc.Emprestimos.Find(e.Id);
                 emprestimo.NomeUsuario = e.NomeUsuario;
@@ -31,32 +31,29 @@ namespace Biblioteca.Models
             }
         }
 
-        public ICollection<Emprestimo> ListarTodos(FiltrosEmprestimos filtro)
+        public ICollection<Emprestimo> ListarTodos(FiltrosEmprestimos filtro = null)
         {
-            using(BibliotecaContext bc = new BibliotecaContext())
+            using (BibliotecaContext bc = new BibliotecaContext())
             {
-                return bc.Emprestimos.Include(e => e.Livro).ToList();
-            }
-        }
-
-        public ICollection<Livro> LivrosDisponivel(){
-            using (BibliotecaContext bc = new BibliotecaContext()){
-                ICollection<Livro> lista = bc.Livros.ToList();;
-                ICollection<Emprestimo> emprestimos = bc.Emprestimos.ToList();
-                foreach(Emprestimo e in emprestimos){
-                    if (!e.Devolvido) {
-                        lista.Remove(e.Livro);
-                    } else if (e.Devolvido) {
-                        lista.Add(e.Livro);
+                if (filtro != null)
+                {
+                    if (filtro.TipoFiltro == "Usuario")
+                    {
+                        return bc.Emprestimos.Where(e => e.NomeUsuario.Contains(filtro.Filtro)).OrderByDescending(e => e.DataDevolucao).ToList();
+                    }
+                    if (filtro.TipoFiltro == "Livro")
+                    {
+                        return bc.Emprestimos.Where(e => e.Livro.Titulo.Contains(filtro.Filtro)).OrderByDescending(e => e.DataDevolucao).ToList();
                     }
                 }
-                return lista;
+
+
+                return bc.Emprestimos.ToList();
             }
         }
-
         public Emprestimo ObterPorId(int id)
         {
-            using(BibliotecaContext bc = new BibliotecaContext())
+            using (BibliotecaContext bc = new BibliotecaContext())
             {
                 return bc.Emprestimos.Find(id);
             }
